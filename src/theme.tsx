@@ -1,9 +1,26 @@
 import { createTheme } from '@mui/material/styles'
 
-// Defaut theme: https://mui.com/material-ui/customization/default-theme/
+declare module '@mui/material/styles' {
+  interface Theme {
+    trello: {
+      appBarHeight: string
+      boardBarHeight: string
+    }
+  }
+  // allow configuration using `createTheme`
+  interface ThemeOptions {
+    trello?: {
+      appBarHeight?: string
+      boardBarHeight?: string
+    }
+  }
+}
 
-// A custom theme for this app
 const theme = createTheme({
+  trello: {
+    appBarHeight: '48px',
+    boardBarHeight: '58px'
+  },
   colorSchemes: {
     dark: true
   }
