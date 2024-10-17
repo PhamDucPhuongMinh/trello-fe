@@ -20,6 +20,7 @@ import Drawer from '@mui/material/Drawer'
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import SearchIcon from '@mui/icons-material/Search'
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 import { MENU } from '~/data'
 
 const AppBar: React.FC = () => {
@@ -28,7 +29,6 @@ const AppBar: React.FC = () => {
 
   return (
     <Box
-      px={2}
       sx={{
         width: '100%',
         height: theme => theme.trello.appBarHeight,
@@ -36,8 +36,8 @@ const AppBar: React.FC = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 1,
-        overflowX: 'auto',
-        paddingY: 0
+        paddingX: 2,
+        overflowX: 'auto'
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -72,7 +72,9 @@ const AppBar: React.FC = () => {
           <Templates />
         </Box>
 
-        <Button variant="outlined">Create</Button>
+        <Button variant="outlined" startIcon={<LibraryAddIcon />}>
+          Create
+        </Button>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <TextField
