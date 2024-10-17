@@ -21,7 +21,11 @@ const ModeSelect: React.FC = () => {
       sx={{ color: 'primary.main', cursor: 'pointer' }}
       onClick={handleChange}
     >
-      {mode === 'light' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+      {mode === 'light' ? (
+        <LightModeOutlinedIcon sx={{ color: 'white', cursor: 'pointer' }} />
+      ) : (
+        <DarkModeOutlinedIcon sx={{ color: 'white', cursor: 'pointer' }} />
+      )}
     </Tooltip>
   )
 }

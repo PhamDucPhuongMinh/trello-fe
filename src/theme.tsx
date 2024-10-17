@@ -33,11 +33,11 @@ const theme = createTheme({
             height: '8px'
           },
           '*::-webkit-scrollbar-thumb': {
-            backgroundColor: 'primary.main',
+            backgroundColor: '#dcdde1',
             borderRadius: '8px'
           },
           '*::-webkit-scrollbar-:hover': {
-            backgroundColor: 'primary.light'
+            backgroundColor: 'white'
           }
         }
       }
@@ -45,7 +45,8 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none'
+          textTransform: 'none',
+          borderWidth: '0.5px'
         }
       }
     },
@@ -67,7 +68,10 @@ const theme = createTheme({
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: theme.palette.primary.main
-          }
+          },
+          '& fieldset': { borderWidth: '0.5px' },
+          '&:hover fieldset': { borderWidth: '1px' },
+          '&.Mui-focused fieldset': { borderWidth: '1px' }
         })
       }
     }

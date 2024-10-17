@@ -19,7 +19,12 @@ const Workspaces: React.FC = () => {
 
   return (
     <Fragment>
-      <Button aria-describedby={id} endIcon={<ExpandMoreIcon />} onClick={e => setAnchorEl(e.currentTarget)}>
+      <Button
+        aria-describedby={id}
+        sx={{ color: 'white' }}
+        endIcon={<ExpandMoreIcon />}
+        onClick={e => setAnchorEl(e.currentTarget)}
+      >
         Workspaces
       </Button>
       <Popover
