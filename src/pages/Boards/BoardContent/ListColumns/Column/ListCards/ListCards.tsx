@@ -1,8 +1,13 @@
 import React from 'react'
 import Card from './Card/Card'
 import Box from '@mui/material/Box'
+import { CardType } from '~/types'
 
-const ListCards: React.FC = () => {
+type Props = {
+  cards: CardType[]
+}
+
+const ListCards: React.FC<Props> = ({ cards }) => {
   return (
     <Box
       sx={{
@@ -25,11 +30,9 @@ const ListCards: React.FC = () => {
         }
       }}
     >
-      <Card />
-      <Card hiddenMedia />
-      <Card hiddenMedia />
-      <Card hiddenMedia />
-      <Card hiddenMedia />
+      {cards.map(card => (
+        <Card key={card._id} card={card} />
+      ))}
     </Box>
   )
 }

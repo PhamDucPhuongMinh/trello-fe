@@ -3,8 +3,13 @@ import Box from '@mui/material/Box'
 import Column from './Column/Column'
 import Button from '@mui/material/Button'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import { ColumnType } from '~/types'
 
-const ListColumns: React.FC = () => {
+type Props = {
+  columns: ColumnType[]
+}
+
+const ListColumns: React.FC<Props> = ({ columns }) => {
   return (
     <Box
       sx={{
@@ -19,8 +24,9 @@ const ListColumns: React.FC = () => {
         }
       }}
     >
-      <Column />
-      <Column />
+      {columns.map(column => (
+        <Column key={column._id} column={column} />
+      ))}
 
       <Box
         sx={{

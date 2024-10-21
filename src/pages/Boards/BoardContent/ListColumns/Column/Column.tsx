@@ -18,8 +18,15 @@ import AddCardIcon from '@mui/icons-material/AddCard'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import Button from '@mui/material/Button'
 import ListCards from './ListCards/ListCards'
+import { ColumnType } from '~/types'
+import { mapOrder } from '~/utils'
 
-const Column: React.FC = () => {
+type Props = {
+  column: ColumnType
+}
+
+const Column: React.FC<Props> = ({ column }) => {
+  const orderedCards = mapOrder(column.cards, column.cardOrderIds, '_id')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -50,7 +57,7 @@ const Column: React.FC = () => {
           justifyContent: 'space-between'
         }}
       >
-        <Typography sx={{ fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' }}>Column Title</Typography>
+        <Typography sx={{ fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' }}>{column.title}</Typography>
         <Box>
           <Tooltip title="More options">
             <IconButton
@@ -124,7 +131,7 @@ const Column: React.FC = () => {
         </Box>
       </Box>
       {/* Box List Card */}
-      <ListCards />
+      <ListCards cards={orderedCards} />
       {/* Box Column Footer */}
       <Box
         sx={{
