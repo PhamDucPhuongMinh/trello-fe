@@ -11,6 +11,12 @@ import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import { BoardType } from '~/types'
+import { capitalizeFirstLetter } from '~/utils'
+
+type Props = {
+  board: BoardType
+}
 
 const CHIP_STYLE = {
   color: 'white',
@@ -26,7 +32,7 @@ const CHIP_STYLE = {
   }
 }
 
-const BoardBar: React.FC = () => {
+const BoardBar: React.FC<Props> = ({ board }) => {
   return (
     <Box
       sx={{
@@ -43,8 +49,8 @@ const BoardBar: React.FC = () => {
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Chip icon={<DashboardIcon />} label="Michu" clickable sx={CHIP_STYLE} />
-        <Chip icon={<VpnLockIcon />} label="Public/Private Workspace" clickable sx={CHIP_STYLE} />
+        <Chip icon={<DashboardIcon />} label={board.title} clickable sx={CHIP_STYLE} />
+        <Chip icon={<VpnLockIcon />} label={capitalizeFirstLetter(board.type)} clickable sx={CHIP_STYLE} />
         <Chip icon={<AddToDriveIcon />} label="Add to Google Drive" clickable sx={CHIP_STYLE} />
         <Chip icon={<BoltIcon />} label="Automation" clickable sx={CHIP_STYLE} />
         <Chip icon={<FilterListIcon />} label="Filter" clickable sx={CHIP_STYLE} />

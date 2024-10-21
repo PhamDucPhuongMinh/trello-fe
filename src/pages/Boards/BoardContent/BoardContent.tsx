@@ -1,8 +1,15 @@
 import React from 'react'
 import Box from '@mui/material/Box'
 import ListColumns from './ListColumns/ListColumns'
+import { BoardType } from '~/types'
+import { mapOrder } from '~/utils'
 
-const BoardContent: React.FC = () => {
+type Props = {
+  board: BoardType
+}
+
+const BoardContent: React.FC<Props> = ({ board }) => {
+  const orderedColumns = mapOrder(board.columns, board.columnOrderIds, '_id')
   return (
     <Box
       sx={{
@@ -12,7 +19,7 @@ const BoardContent: React.FC = () => {
         p: '10px 0'
       }}
     >
-      <ListColumns />
+      <ListColumns columns={orderedColumns} />
     </Box>
   )
 }
