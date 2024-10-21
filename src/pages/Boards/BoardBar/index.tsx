@@ -70,24 +70,37 @@ const BoardBar: React.FC = () => {
             '& .MuiAvatar-root': {
               width: 32,
               height: 32,
-              border: 'none'
+              border: 'none',
+              color: 'white',
+              '&:first-of-type': {
+                bgcolor: '#a4b0be'
+              }
             }
           }}
         >
+          <Tooltip title="Milo" placement="top">
+            <Avatar
+              alt="Milo"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJX-r30P7mmA1o8qgUO6m22g9nylYc9NF1KQ&s"
+            />
+          </Tooltip>
           <Tooltip title="Phương Minh" placement="top">
-            <Avatar alt="Phương Minh" src="/static/images/avatar/1.jpg" />
+            <Avatar
+              alt="Phương Minh"
+              src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/11/avatar-dep-18.jpg"
+            />
           </Tooltip>
           <Tooltip title="Trúc Loan" placement="top">
-            <Avatar alt="Trúc Loan" src="/static/images/avatar/1.jpg" />
+            <Avatar
+              alt="Trúc Loan"
+              src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/11/avatar-dep-8.jpg"
+            />
           </Tooltip>
           <Tooltip title="Michu" placement="top">
-            <Avatar alt="Michu" src="/static/images/avatar/1.jpg" />
+            <Avatar alt="Michu" src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/11/avatar-dep-42.jpg" />
           </Tooltip>
           <Tooltip title="Lona" placement="top">
-            <Avatar alt="Lona" src="/static/images/avatar/1.jpg" />
-          </Tooltip>
-          <Tooltip title="Milo" placement="top">
-            <Avatar alt="Milo" src="/static/images/avatar/1.jpg" />
+            <Avatar alt="Lona" src="https://i.pinimg.com/736x/12/37/b3/1237b30268db9ee0c9cbe3a79b1ff8fa.jpg" />
           </Tooltip>
         </AvatarGroup>
       </Box>
