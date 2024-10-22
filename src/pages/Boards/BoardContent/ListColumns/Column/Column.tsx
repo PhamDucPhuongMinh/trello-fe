@@ -20,6 +20,8 @@ import Button from '@mui/material/Button'
 import ListCards from './ListCards/ListCards'
 import { ColumnType } from '~/types'
 import { mapOrder } from '~/utils'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 type Props = {
   column: ColumnType
@@ -35,8 +37,23 @@ const Column: React.FC<Props> = ({ column }) => {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: column._id,
+    data: { ...column }
+  })
+
+  const dndKitColumnStyles = {
+    transform: CSS.Translate.toString(transform),
+    transition
+  }
+
   return (
     <Box
+      ref={setNodeRef}
+      style={dndKitColumnStyles}
+      {...attributes}
+      {...listeners}
       sx={{
         maxWidth: '300px',
         minWidth: '300px',
