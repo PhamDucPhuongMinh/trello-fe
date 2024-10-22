@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useColorScheme } from '@mui/material/styles'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
@@ -11,6 +11,13 @@ const ModeSelect: React.FC = () => {
     setMode(mode === 'light' ? 'dark' : 'light')
   }
 
+  useEffect(() => {
+    if (mode === 'system') {
+      setMode('light')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
+
   if (!mode) {
     return null
   }
@@ -21,10 +28,10 @@ const ModeSelect: React.FC = () => {
       sx={{ color: 'primary.main', cursor: 'pointer' }}
       onClick={handleChange}
     >
-      {mode === 'light' ? (
-        <LightModeOutlinedIcon sx={{ color: 'white', cursor: 'pointer' }} />
-      ) : (
+      {mode === 'dark' ? (
         <DarkModeOutlinedIcon sx={{ color: 'white', cursor: 'pointer' }} />
+      ) : (
+        <LightModeOutlinedIcon sx={{ color: 'white', cursor: 'pointer' }} />
       )}
     </Tooltip>
   )
