@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
 import ListColumns from './ListColumns/ListColumns'
 import { BoardType, CardType, ColumnType } from '~/types'
 import { mapOrder } from '~/utils'
@@ -26,6 +26,7 @@ import {
 import { arrayMove } from '@dnd-kit/sortable'
 import Column from './ListColumns/Column/Column'
 import Card from './ListColumns/Column/ListCards/Card/Card'
+import { generatePlaceholcerCard } from '~/utils/formatter'
 
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
@@ -85,6 +86,10 @@ const BoardContent: React.FC<Props> = ({ board }) => {
         nextActiveColumn.cards = nextActiveColumn.cards.filter(card => card._id !== activeDraggingCardId)
         // Cập nhật lại cardOrderIds của column active (column cũ của card đang kéo)
         nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(card => card._id)
+        // Thêm placeholder card vào column nếu column đó rỗng để tránh lỗi khi kéo thả card vào column rỗng - Dữ liệu chỉ giả ở phía Client
+        if (isEmpty(nextActiveColumn.cards)) {
+          nextActiveColumn.cards = [generatePlaceholcerCard(nextActiveColumn)]
+        }
       }
       if (nextOverColumn) {
         // Kiểm tra xem card đang kéo đã có trong column đích chưa, nếu có thì xoá nó đi
@@ -92,6 +97,8 @@ const BoardContent: React.FC<Props> = ({ board }) => {
         // Thêm card vào column đích (nơi card sẽ được thả vào) theo vị trí Index mới
         const rebuildActiveDraggingCardData = { ...(activeDraggingCardData as CardType), columnId: overColumn._id }
         nextOverColumn.cards = nextOverColumn.cards.toSpliced(newCardIndex, 0, rebuildActiveDraggingCardData)
+        // Xoá placeholder card nếu có
+        nextOverColumn.cards = nextOverColumn.cards.filter(card => !card.FE_placeholder)
         // Cập nhật lại cardOrderIds của column đích (nơi card sẽ được thả vào)
         nextOverColumn.cardOrderIds = nextOverColumn.cards.map(card => card._id)
       }
@@ -229,7 +236,7 @@ const BoardContent: React.FC<Props> = ({ board }) => {
           })[0]?.id
         }
 
-        lastOverId.current = overId.toString()
+        lastOverId.current = overId?.toString()
         return [{ id: overId }]
       }
 

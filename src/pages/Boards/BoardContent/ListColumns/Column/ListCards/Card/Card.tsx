@@ -28,7 +28,7 @@ const Card: React.FC<Props> = ({ card }) => {
     transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    border: isDragging ? '1px solid #1876d3' : 1
+    border: isDragging ? '1px solid #1876d3' : '1px solid transparent'
   }
 
   return (
@@ -37,7 +37,12 @@ const Card: React.FC<Props> = ({ card }) => {
       style={dndKitCardStyles}
       {...attributes}
       {...listeners}
-      sx={{ cursor: 'pointer', overflow: 'unset', boxShadow: '0 1px 1px rgba(0,0,0,0.2)' }}
+      sx={{
+        cursor: card.FE_placeholder ? 'default' : 'pointer',
+        overflow: 'unset',
+        boxShadow: '0 1px 1px rgba(0,0,0,0.2)',
+        opacity: card.FE_placeholder ? '0 !important' : '1 !important' // Hide placeholder card
+      }}
     >
       {card.cover && <CardMedia sx={{ height: 140 }} image={card.cover} />}
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
