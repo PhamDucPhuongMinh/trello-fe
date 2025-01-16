@@ -27,6 +27,7 @@ type CardType = {
   memberIds: string[]
   comments: string[]
   attachments: string[]
+  FE_placeholder?: boolean
 }
 
 export type { BoardType, ColumnType, CardType }
