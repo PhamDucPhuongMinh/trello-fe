@@ -24,6 +24,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
+import { toast } from 'react-toastify'
 
 type Props = {
   column: ColumnType
@@ -44,7 +45,12 @@ const Column: React.FC<Props> = ({ column }) => {
   const [newCardTitle, setNewCardTitle] = useState('')
 
   const handleAddNewCard = () => {
-    if (newCardTitle.trim() === '') return
+    if (newCardTitle.trim() === '') {
+      toast.error('Card title is required', {
+        position: 'bottom-right'
+      })
+      return
+    }
     console.log(newCardTitle)
   }
 

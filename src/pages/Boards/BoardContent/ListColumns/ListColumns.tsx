@@ -7,6 +7,7 @@ import { ColumnType } from '~/types'
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
+import { toast } from 'react-toastify'
 
 type Props = {
   columns: ColumnType[]
@@ -17,7 +18,10 @@ const ListColumns: React.FC<Props> = ({ columns }) => {
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
   const handleAddNewColumn = () => {
-    if (newColumnTitle.trim() === '') return
+    if (newColumnTitle.trim() === '') {
+      toast.error('Column title is required')
+      return
+    }
     console.log(newColumnTitle)
   }
 
