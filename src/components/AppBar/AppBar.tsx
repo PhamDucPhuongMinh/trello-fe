@@ -22,6 +22,7 @@ import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import SearchIcon from '@mui/icons-material/Search'
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 import CloseIcon from '@mui/icons-material/Close'
+import InputAdornment from '@mui/material/InputAdornment'
 import { MENU } from '~/data'
 
 const AppBar: React.FC = () => {
@@ -104,13 +105,19 @@ const AppBar: React.FC = () => {
           onChange={e => setSearchValue(e.target.value)}
           slotProps={{
             input: {
-              startAdornment: <SearchIcon sx={{ color: 'white' }} />,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: 'white' }} />
+                </InputAdornment>
+              ),
               endAdornment: (
-                <CloseIcon
-                  fontSize="small"
-                  sx={{ color: searchValue === '' ? 'transparent' : 'white', cursor: 'pointer' }}
-                  onClick={() => setSearchValue('')}
-                />
+                <InputAdornment position="end">
+                  <CloseIcon
+                    fontSize="small"
+                    sx={{ color: searchValue === '' ? 'transparent' : 'white', cursor: 'pointer' }}
+                    onClick={() => setSearchValue('')}
+                  />
+                </InputAdornment>
               )
             }
           }}

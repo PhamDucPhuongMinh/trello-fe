@@ -9,7 +9,7 @@ const Board: React.FC = () => {
   const [board, setBoard] = useState(null)
 
   useEffect(() => {
-    const boardId = '67aeca85ecb3e1c0c80f0917a' // Temporarily hardcoded
+    const boardId = '67aeca85ecb3e1c0c80f0917' // Temporarily hardcoded
     fetchBoardDetailsAPI(boardId)
       .then(data => {
         setBoard(data)

@@ -22,6 +22,8 @@ import { ColumnType } from '~/types'
 import { mapOrder } from '~/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import TextField from '@mui/material/TextField'
+import CloseIcon from '@mui/icons-material/Close'
 
 type Props = {
   column: ColumnType
@@ -31,11 +33,19 @@ const Column: React.FC<Props> = ({ column }) => {
   const orderedCards = mapOrder(column.cards, column.cardOrderIds, '_id')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+  const handleCloseOption = () => {
     setAnchorEl(null)
+  }
+
+  const [isOpenCreateCardForm, setIsOpenCreateCardForm] = useState(false)
+  const [newCardTitle, setNewCardTitle] = useState('')
+
+  const handleAddNewCard = () => {
+    if (newCardTitle.trim() === '') return
+    console.log(newCardTitle)
   }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -84,7 +94,7 @@ const Column: React.FC<Props> = ({ column }) => {
                 aria-controls={open ? 'basic-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
+                onClick={handleOpenOption}
               >
                 <ExpandMoreIcon />
               </IconButton>
@@ -94,7 +104,7 @@ const Column: React.FC<Props> = ({ column }) => {
               id="basic-menu-dropdown"
               anchorEl={anchorEl}
               open={open}
-              onClose={handleClose}
+              onClose={handleCloseOption}
               MenuListProps={{
                 'aria-labelledby': 'basic-column-dropdown'
               }}
@@ -154,16 +164,86 @@ const Column: React.FC<Props> = ({ column }) => {
         <Box
           sx={{
             height: theme => theme.trello.columnHeightFooter,
-            p: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            p: 2
           }}
         >
-          <Button startIcon={<AddCardIcon />}>Add new card</Button>
-          <Tooltip title="Drag to move">
-            <DragHandleIcon />
-          </Tooltip>
+          {!isOpenCreateCardForm ? (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Button startIcon={<AddCardIcon />} onClick={() => setIsOpenCreateCardForm(prev => !prev)}>
+                Add new card
+              </Button>
+              <Tooltip title="Drag to move">
+                <DragHandleIcon />
+              </Tooltip>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 1
+              }}
+            >
+              <TextField
+                size="small"
+                label="Enter card title ..."
+                type="text"
+                variant="outlined"
+                autoFocus
+                sx={{
+                  '& label': { color: 'text.primary' },
+                  '& input': {
+                    color: theme => theme.palette.primary.main,
+                    bgColor: theme => (theme.palette.mode === 'dark' ? '#333643' : 'white')
+                  },
+                  '& label.Mui-focused': { color: theme => theme.palette.primary.main },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: theme => theme.palette.primary.main },
+                    '&:hover fieldset': { borderColor: theme => theme.palette.primary.main },
+                    '&.Mui-focused fieldset': { borderColor: theme => theme.palette.primary.main }
+                  },
+                  '& .MuiOutlinedInput-input': { borderRadius: 1 }
+                }}
+                value={newCardTitle}
+                onChange={e => setNewCardTitle(e.target.value)}
+              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  sx={{
+                    boxShadow: 'none',
+                    border: '0.5px solid',
+                    borderColor: theme => theme.palette.success.main,
+                    '&:hover': {
+                      bgColor: theme => theme.palette.success.main
+                    }
+                  }}
+                  onClick={handleAddNewCard}
+                >
+                  Add
+                </Button>
+                <CloseIcon
+                  fontSize="small"
+                  sx={{
+                    cursor: 'pointer',
+                    color: theme => theme.palette.warning.light
+                  }}
+                  onClick={() => setIsOpenCreateCardForm(prev => !prev)}
+                />
+              </Box>
+            </Box>
+          )}
         </Box>
       </Box>
     </div>

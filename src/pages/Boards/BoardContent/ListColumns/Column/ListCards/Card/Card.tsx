@@ -41,7 +41,11 @@ const Card: React.FC<Props> = ({ card }) => {
         cursor: card.FE_placeholder ? 'default' : 'pointer',
         overflow: 'unset',
         boxShadow: '0 1px 1px rgba(0,0,0,0.2)',
-        opacity: card.FE_placeholder ? '0 !important' : '1 !important' // Hide placeholder card
+        opacity: card.FE_placeholder ? '0 !important' : '1 !important', // Hide placeholder card
+        border: '1px solid transparent',
+        '&:hover': {
+          borderColor: theme => theme.palette.primary.main
+        }
       }}
     >
       {card.cover && <CardMedia sx={{ height: 140 }} image={card.cover} />}
