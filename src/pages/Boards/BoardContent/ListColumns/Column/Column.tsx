@@ -199,6 +199,7 @@ const Column: React.FC<Props> = ({ column }) => {
                 type="text"
                 variant="outlined"
                 autoFocus
+                data-no-dnd="true"
                 sx={{
                   '& label': { color: 'text.primary' },
                   '& input': {
