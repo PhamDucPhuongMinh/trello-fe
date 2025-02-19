@@ -28,9 +28,10 @@ import { toast } from 'react-toastify'
 
 type Props = {
   column: ColumnType
+  createCard: (_columnId: string, _title: string) => Promise<void>
 }
 
-const Column: React.FC<Props> = ({ column }) => {
+const Column: React.FC<Props> = ({ column, createCard }) => {
   const orderedCards = mapOrder(column.cards, column.cardOrderIds, '_id')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -44,14 +45,16 @@ const Column: React.FC<Props> = ({ column }) => {
   const [isOpenCreateCardForm, setIsOpenCreateCardForm] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const handleAddNewCard = () => {
+  const handleAddNewCard = async () => {
     if (newCardTitle.trim() === '') {
       toast.error('Card title is required', {
         position: 'bottom-right'
       })
       return
     }
-    console.log(newCardTitle)
+    await createCard(column._id, newCardTitle)
+    setNewCardTitle('')
+    setIsOpenCreateCardForm(false)
   }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({

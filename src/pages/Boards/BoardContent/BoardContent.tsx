@@ -34,9 +34,11 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 type Props = {
   board: BoardType
+  createColumn: (_title: string) => Promise<void>
+  createCard: (_columnId: string, _title: string) => Promise<void>
 }
 
-const BoardContent: React.FC<Props> = ({ board }) => {
+const BoardContent: React.FC<Props> = ({ board, createColumn, createCard }) => {
   const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } }) // Mouse di chuyên 10px mới bắt đầu drag
   const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 500 } }) // Touch di chuyên 10px mới bắt đầu drag
   const sensors = useSensors(mouseSensor, touchSensor)
@@ -266,7 +268,7 @@ const BoardContent: React.FC<Props> = ({ board }) => {
           p: '10px 0'
         }}
       >
-        <ListColumns columns={orderedColumns} />
+        <ListColumns columns={orderedColumns} createColumn={createColumn} createCard={createCard} />
         <DragOverlay dropAnimation={dropAnimation}>
           {(!activeDragItemId || !activeDragItemType) && null}
           {activeDragItemId && activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && (

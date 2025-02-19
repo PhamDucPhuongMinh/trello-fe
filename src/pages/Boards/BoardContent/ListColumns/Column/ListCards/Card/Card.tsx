@@ -17,7 +17,7 @@ type Props = {
 }
 
 const Card: React.FC<Props> = ({ card }) => {
-  const isShowCardActions = () => !!card.memberIds.length || !!card.comments.length || !!card.attachments.length
+  // const isShowCardActions = () => !!card.memberIds.length || !!card.comments.length || !!card.attachments.length
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card._id,
@@ -52,7 +52,7 @@ const Card: React.FC<Props> = ({ card }) => {
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
         <Typography>{card.title}</Typography>
       </CardContent>
-      {isShowCardActions() && (
+      {/* {isShowCardActions() && (
         <CardActions sx={{ padding: '0 4px 8px 4px' }}>
           <Button size="small" startIcon={<GroupIcon />}>
             {card.memberIds.length}
@@ -64,7 +64,7 @@ const Card: React.FC<Props> = ({ card }) => {
             {card.attachments.length}
           </Button>
         </CardActions>
-      )}
+      )} */}
     </MuiCard>
   )
 }
