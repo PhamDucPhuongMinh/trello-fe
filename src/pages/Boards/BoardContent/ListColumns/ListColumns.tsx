@@ -11,18 +11,22 @@ import { toast } from 'react-toastify'
 
 type Props = {
   columns: ColumnType[]
+  createColumn: (_title: string) => Promise<void>
+  createCard: (_columnId: string, _title: string) => Promise<void>
 }
 
-const ListColumns: React.FC<Props> = ({ columns }) => {
+const ListColumns: React.FC<Props> = ({ columns, createColumn, createCard }) => {
   const [isOpenCreateColumnForm, setIsOpenCreateColumnForm] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
-  const handleAddNewColumn = () => {
+  const handleAddNewColumn = async () => {
     if (newColumnTitle.trim() === '') {
       toast.error('Column title is required')
       return
     }
-    console.log(newColumnTitle)
+    await createColumn(newColumnTitle)
+    setNewColumnTitle('')
+    setIsOpenCreateColumnForm(false)
   }
 
   return (
@@ -41,7 +45,7 @@ const ListColumns: React.FC<Props> = ({ columns }) => {
         }}
       >
         {columns.map(column => (
-          <Column key={column._id} column={column} />
+          <Column key={column._id} column={column} createCard={createCard} />
         ))}
 
         {!isOpenCreateColumnForm ? (
