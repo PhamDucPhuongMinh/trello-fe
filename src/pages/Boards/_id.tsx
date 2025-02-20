@@ -3,7 +3,7 @@ import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
-import { createColumnAPI, fetchBoardDetailsAPI, createCardAPI } from '~/apis'
+import { createColumnAPI, fetchBoardDetailsAPI, createCardAPI, updateBoardDetailsAPI } from '~/apis'
 import { BoardType, ColumnType } from '~/types'
 import { generatePlaceholcerCard } from '~/utils/formatter'
 import { isEmpty } from 'lodash'
@@ -40,6 +40,21 @@ const Board: React.FC = () => {
     }
   }
 
+  // Xử lý sau khi kéo thả column ở event DragEnd
+  const handleMoveColums = (orderedColumns: ColumnType[]) => {
+    if (board) {
+      const dndOrderedColumnsIds = orderedColumns.map(column => column._id)
+
+      const newBoard = { ...board }
+      newBoard.columns = orderedColumns
+      newBoard.columnOrderIds = dndOrderedColumnsIds
+      setBoard(newBoard)
+
+      // Update API
+      updateBoardDetailsAPI(board._id, newBoard)
+    }
+  }
+
   useEffect(() => {
     const boardId = '67b3f30391d98682ed4db77f' // Temporarily hardcoded
     fetchBoardDetailsAPI(boardId)
@@ -62,7 +77,14 @@ const Board: React.FC = () => {
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <AppBar />
       {board && <BoardBar board={board} />}
-      {board && <BoardContent board={board} createColumn={handleCreateColumn} createCard={handleCreateCard} />}
+      {board && (
+        <BoardContent
+          board={board}
+          createColumn={handleCreateColumn}
+          createCard={handleCreateCard}
+          moveColums={handleMoveColums}
+        />
+      )}
     </Container>
   )
 }
