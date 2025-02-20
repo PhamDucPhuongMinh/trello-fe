@@ -36,9 +36,10 @@ type Props = {
   board: BoardType
   createColumn: (_title: string) => Promise<void>
   createCard: (_columnId: string, _title: string) => Promise<void>
+  moveColums: (_orderedColumns: ColumnType[]) => void
 }
 
-const BoardContent: React.FC<Props> = ({ board, createColumn, createCard }) => {
+const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveColums }) => {
   const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } }) // Mouse di chuyên 10px mới bắt đầu drag
   const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 500 } }) // Touch di chuyên 10px mới bắt đầu drag
   const sensors = useSensors(mouseSensor, touchSensor)
@@ -191,8 +192,10 @@ const BoardContent: React.FC<Props> = ({ board, createColumn, createCard }) => {
         const oldColumnIndex = orderedColumns.findIndex(column => column._id === active.id)
         const newColumnIndex = orderedColumns.findIndex(column => column._id === over.id)
         const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
-        // const dndOrderedColumnsIds = dndOrderedColumns.map(column => column._id)
+        // Update state
         setOrderedColumns(dndOrderedColumns)
+        // Update API
+        moveColums(dndOrderedColumns)
       }
       setActiveDragItemId(null)
       setActiveDragItemType(null)
