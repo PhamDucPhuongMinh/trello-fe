@@ -33,6 +33,10 @@ const Board: React.FC = () => {
       const newBoard = { ...board }
       const column = newBoard.columns.find(column => column._id === columnId)
       if (column) {
+        if (column.cards.length === 1 && column.cards[0].FE_placeholder) {
+          column.cards = []
+          column.cardOrderIds = []
+        }
         column.cards.push(createdCard)
         column.cardOrderIds.push(createdCard._id)
       }
