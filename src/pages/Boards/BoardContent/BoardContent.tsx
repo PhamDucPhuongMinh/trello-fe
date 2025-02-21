@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import { cloneDeep, isEmpty } from 'lodash'
 import ListColumns from './ListColumns/ListColumns'
 import { BoardType, CardType, ColumnType } from '~/types'
-import { mapOrder } from '~/utils'
 import {
   DndContext,
   DragEndEvent,
@@ -37,9 +36,23 @@ type Props = {
   createColumn: (_title: string) => Promise<void>
   createCard: (_columnId: string, _title: string) => Promise<void>
   moveColums: (_orderedColumns: ColumnType[]) => void
+  moveCardInTheSameColumn: (_orderedCards: CardType[], _orderedCardIds: string[], _columnId: string) => void
+  moveCardToDifferentColumn: (
+    _prevColumnId: string,
+    _nextColumnId: string,
+    _cardId: string,
+    _orderedColumns: ColumnType[]
+  ) => void
 }
 
-const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveColums }) => {
+const BoardContent: React.FC<Props> = ({
+  board,
+  createColumn,
+  createCard,
+  moveColums,
+  moveCardInTheSameColumn,
+  moveCardToDifferentColumn
+}) => {
   const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } }) // Mouse di chuyên 10px mới bắt đầu drag
   const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 500 } }) // Touch di chuyên 10px mới bắt đầu drag
   const sensors = useSensors(mouseSensor, touchSensor)
@@ -60,7 +73,8 @@ const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveCo
     active: Active,
     over: Over,
     overColumn: ColumnType,
-    activeColumn: ColumnType
+    activeColumn: ColumnType,
+    eventTrigger: 'dragover' | 'dragend'
   ) => {
     setOrderedColumns(prevState => {
       const {
@@ -104,6 +118,16 @@ const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveCo
         // Cập nhật lại cardOrderIds của column đích (nơi card sẽ được thả vào)
         nextOverColumn.cardOrderIds = nextOverColumn.cards.map(card => card._id)
       }
+
+      if (eventTrigger === 'dragend' && oldColumnOfDraggingCard && nextOverColumn) {
+        moveCardToDifferentColumn(
+          oldColumnOfDraggingCard._id.toString(),
+          nextOverColumn._id.toString(),
+          activeDraggingCardId.toString(),
+          nextColumns
+        )
+      }
+
       return nextColumns
     })
   }
@@ -141,7 +165,7 @@ const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveCo
     // Chỉ xử lý khi kéo thả CARD từ COLUMN này sang COLUMN khác
     // Đây là xử lý trong lúc kéo, còn kéo xong thì nó ở hàm handleDragEnd
     if (activeColumn._id !== overColumn._id) {
-      handleMoveCardBetweenDifferentColumns(active, over, overColumn, activeColumn)
+      handleMoveCardBetweenDifferentColumns(active, over, overColumn, activeColumn, 'dragover')
     }
   }
 
@@ -163,13 +187,14 @@ const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveCo
 
       // Khi kéo thả card sang column khác
       if (oldColumnOfDraggingCard._id !== overColumn._id) {
-        handleMoveCardBetweenDifferentColumns(active, over, overColumn, activeColumn)
+        handleMoveCardBetweenDifferentColumns(active, over, overColumn, activeColumn, 'dragend')
       }
       // Khi kéo thả card trong cùng 1 column
       else {
         const oldCardIndex = oldColumnOfDraggingCard.cards.findIndex(column => column._id === activeDragItemId)
         const newCardIndex = overColumn.cards.findIndex(column => column._id === overCardId)
         const dndOrderedCards = arrayMove(oldColumnOfDraggingCard.cards, oldCardIndex, newCardIndex)
+        const dndOrderdCardIds = dndOrderedCards.map(card => card._id)
 
         setOrderedColumns(prevState => {
           const nextColumns = cloneDeep(prevState)
@@ -178,11 +203,13 @@ const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveCo
           const targetColumn = nextColumns.find(column => column._id === overColumn._id)
           if (targetColumn) {
             targetColumn.cards = dndOrderedCards
-            targetColumn.cardOrderIds = dndOrderedCards.map(card => card._id)
+            targetColumn.cardOrderIds = dndOrderdCardIds
           }
 
           return nextColumns
         })
+
+        moveCardInTheSameColumn(dndOrderedCards, dndOrderdCardIds, oldColumnOfDraggingCard._id)
       }
     }
     // Item đang kéo thả là COLUMN
@@ -251,7 +278,8 @@ const BoardContent: React.FC<Props> = ({ board, createColumn, createCard, moveCo
   )
 
   useEffect(() => {
-    setOrderedColumns(mapOrder(board.columns, board.columnOrderIds, '_id'))
+    // Đã được sắp xếp theo ColumnOrderedIds ở Board component (_id.tsx)
+    setOrderedColumns(board.columns)
   }, [board])
 
   return (

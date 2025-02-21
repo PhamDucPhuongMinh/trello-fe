@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { BoardType } from '~/types'
+import { BoardType, ColumnType } from '~/types'
 import { API_ROOT } from '~/utils/contants'
 
 export const fetchBoardDetailsAPI = async (boardId: string) => {
@@ -14,6 +14,22 @@ export const updateBoardDetailsAPI = async (boardId: string, newBoard: BoardType
 
 export const createColumnAPI = async (data: { title: string; boardId: string }) => {
   const response = await axios.post(`${API_ROOT}/columns`, data)
+  return response.data
+}
+
+export const updateColumnDetailsAPI = async (columnId: string, newColumn: Partial<ColumnType>) => {
+  const response = await axios.put(`${API_ROOT}/columns/${columnId}`, newColumn)
+  return response.data
+}
+
+export const moveCardToDifferentAPI = async (data: {
+  cardId: string
+  prevColumnId: string
+  prevCardOrderedIds?: string[]
+  nextColumnId: string
+  nextCardOrderedIds?: string[]
+}) => {
+  const response = await axios.put(`${API_ROOT}/boards/supports/moving_card`, data)
   return response.data
 }
 

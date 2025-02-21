@@ -3,10 +3,18 @@ import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
-import { createColumnAPI, fetchBoardDetailsAPI, createCardAPI, updateBoardDetailsAPI } from '~/apis'
-import { BoardType, ColumnType } from '~/types'
+import {
+  createColumnAPI,
+  fetchBoardDetailsAPI,
+  createCardAPI,
+  updateBoardDetailsAPI,
+  updateColumnDetailsAPI,
+  moveCardToDifferentAPI
+} from '~/apis'
+import { BoardType, CardType, ColumnType } from '~/types'
 import { generatePlaceholcerCard } from '~/utils/formatter'
 import { isEmpty } from 'lodash'
+import { mapOrder } from '~/utils'
 
 const Board: React.FC = () => {
   const [board, setBoard] = useState<BoardType | null>(null)
@@ -47,11 +55,11 @@ const Board: React.FC = () => {
   // Xử lý sau khi kéo thả column ở event DragEnd
   const handleMoveColums = (orderedColumns: ColumnType[]) => {
     if (board) {
-      const dndOrderedColumnsIds = orderedColumns.map(column => column._id)
+      const orderedColumnsIds = orderedColumns.map(column => column._id)
 
       const newBoard = { ...board }
       newBoard.columns = orderedColumns
-      newBoard.columnOrderIds = dndOrderedColumnsIds
+      newBoard.columnOrderIds = orderedColumnsIds
       setBoard(newBoard)
 
       // Update API
@@ -59,15 +67,61 @@ const Board: React.FC = () => {
     }
   }
 
+  // Xử lý sau khi kéo thả card trong cùng 1 column ở event DragEnd
+  const handleMoveCardInTheSameColumn = (orderedCards: CardType[], orderedCardIds: string[], columnId: string) => {
+    if (board) {
+      const newBoard = { ...board }
+      const columnToUpdate = newBoard.columns.find(column => column._id === columnId)
+      if (columnToUpdate) {
+        columnToUpdate.cards = orderedCards
+        columnToUpdate.cardOrderIds = orderedCardIds
+        // Update board state
+        setBoard(newBoard)
+        // Update API
+        updateColumnDetailsAPI(columnId, { cardOrderIds: orderedCardIds })
+      }
+    }
+  }
+
+  const handleMoveCardToDifferentColumn = (
+    prevColumnId: string,
+    nextColumnId: string,
+    cardId: string,
+    orderedColumns: ColumnType[]
+  ) => {
+    if (board) {
+      const orderedColumnsIds = orderedColumns.map(column => column._id)
+
+      const newBoard = { ...board }
+      newBoard.columns = orderedColumns
+      newBoard.columnOrderIds = orderedColumnsIds
+      setBoard(newBoard)
+
+      // Update API
+      moveCardToDifferentAPI({
+        cardId,
+        prevColumnId,
+        prevCardOrderedIds: orderedColumns.find(column => column._id === prevColumnId)?.cardOrderIds,
+        nextColumnId,
+        nextCardOrderedIds: orderedColumns.find(column => column._id === nextColumnId)?.cardOrderIds
+      })
+    }
+  }
+
   useEffect(() => {
     const boardId = '67b3f30391d98682ed4db77f' // Temporarily hardcoded
     fetchBoardDetailsAPI(boardId)
       .then((boardData: BoardType) => {
+        // Sắp xếp lại column theo columnOrderIds
+        boardData.columns = mapOrder(boardData.columns, boardData.columnOrderIds, '_id')
         // Thêm card rỗng vào column nếu column không có card để có thể kéo thả card vào column
         boardData.columns.forEach(column => {
           if (isEmpty(column.cards)) {
             column.cards = [generatePlaceholcerCard(column)]
             column.cardOrderIds = [generatePlaceholcerCard(column)._id]
+          } else {
+            // Sắp xếp lại card theo cardOrderIds
+            column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
           }
         })
         setBoard(boardData)
@@ -87,6 +141,8 @@ const Board: React.FC = () => {
           createColumn={handleCreateColumn}
           createCard={handleCreateCard}
           moveColums={handleMoveColums}
+          moveCardInTheSameColumn={handleMoveCardInTheSameColumn}
+          moveCardToDifferentColumn={handleMoveCardToDifferentColumn}
         />
       )}
     </Container>

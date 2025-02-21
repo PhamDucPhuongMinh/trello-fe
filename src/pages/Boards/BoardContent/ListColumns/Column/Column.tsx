@@ -19,7 +19,6 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import Button from '@mui/material/Button'
 import ListCards from './ListCards/ListCards'
 import { ColumnType } from '~/types'
-import { mapOrder } from '~/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import TextField from '@mui/material/TextField'
@@ -32,7 +31,7 @@ type Props = {
 }
 
 const Column: React.FC<Props> = ({ column, createCard }) => {
-  const orderedCards = mapOrder(column.cards, column.cardOrderIds, '_id')
+  const orderedCards = column.cards // Đã được sắp xếp theo CardOrderIds ở Board component (_id.tsx)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleOpenOption = (event: React.MouseEvent<HTMLButtonElement>) => {
