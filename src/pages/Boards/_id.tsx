@@ -9,12 +9,14 @@ import {
   createCardAPI,
   updateBoardDetailsAPI,
   updateColumnDetailsAPI,
-  moveCardToDifferentAPI
+  moveCardToDifferentAPI,
+  deleteColumnAPI
 } from '~/apis'
 import { BoardType, CardType, ColumnType } from '~/types'
 import { generatePlaceholcerCard } from '~/utils/formatter'
 import { isEmpty } from 'lodash'
 import { mapOrder } from '~/utils'
+import { toast } from 'react-toastify'
 
 const Board: React.FC = () => {
   const [board, setBoard] = useState<BoardType | null>(null)
@@ -108,6 +110,16 @@ const Board: React.FC = () => {
     }
   }
 
+  const handleDeleteColumn = (columnId: string) => {
+    if (board) {
+      const newBoard = { ...board }
+      newBoard.columns = newBoard.columns.filter(column => column._id !== columnId)
+      newBoard.columnOrderIds = newBoard.columnOrderIds.filter(id => id !== columnId)
+      setBoard(newBoard)
+      deleteColumnAPI(columnId).then(res => toast.success(res?.deleteResult))
+    }
+  }
+
   useEffect(() => {
     const boardId = '67b3f30391d98682ed4db77f' // Temporarily hardcoded
     fetchBoardDetailsAPI(boardId)
@@ -143,6 +155,7 @@ const Board: React.FC = () => {
           moveColums={handleMoveColums}
           moveCardInTheSameColumn={handleMoveCardInTheSameColumn}
           moveCardToDifferentColumn={handleMoveCardToDifferentColumn}
+          deleteColumn={handleDeleteColumn}
         />
       )}
     </Container>

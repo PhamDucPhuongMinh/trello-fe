@@ -22,6 +22,11 @@ export const updateColumnDetailsAPI = async (columnId: string, newColumn: Partia
   return response.data
 }
 
+export const deleteColumnAPI = async (columnId: string) => {
+  const response = await axios.delete(`${API_ROOT}/columns/${columnId}`)
+  return response.data
+}
+
 export const moveCardToDifferentAPI = async (data: {
   cardId: string
   prevColumnId: string
