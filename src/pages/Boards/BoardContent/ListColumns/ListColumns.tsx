@@ -13,9 +13,10 @@ type Props = {
   columns: ColumnType[]
   createColumn: (_title: string) => Promise<void>
   createCard: (_columnId: string, _title: string) => Promise<void>
+  deleteColumn: (_columnId: string) => void
 }
 
-const ListColumns: React.FC<Props> = ({ columns, createColumn, createCard }) => {
+const ListColumns: React.FC<Props> = ({ columns, createColumn, createCard, deleteColumn }) => {
   const [isOpenCreateColumnForm, setIsOpenCreateColumnForm] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
@@ -45,7 +46,7 @@ const ListColumns: React.FC<Props> = ({ columns, createColumn, createCard }) => 
         }}
       >
         {columns.map(column => (
-          <Column key={column._id} column={column} createCard={createCard} />
+          <Column key={column._id} column={column} createCard={createCard} deleteColumn={deleteColumn} />
         ))}
 
         {!isOpenCreateColumnForm ? (

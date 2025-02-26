@@ -24,13 +24,15 @@ import { CSS } from '@dnd-kit/utilities'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
+import { useConfirm } from 'material-ui-confirm'
 
 type Props = {
   column: ColumnType
   createCard: (_columnId: string, _title: string) => Promise<void>
+  deleteColumn: (_columnId: string) => void
 }
 
-const Column: React.FC<Props> = ({ column, createCard }) => {
+const Column: React.FC<Props> = ({ column, createCard, deleteColumn }) => {
   const orderedCards = column.cards // Đã được sắp xếp theo CardOrderIds ở Board component (_id.tsx)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -54,6 +56,20 @@ const Column: React.FC<Props> = ({ column, createCard }) => {
     await createCard(column._id, newCardTitle)
     setNewCardTitle('')
     setIsOpenCreateCardForm(false)
+  }
+
+  const confirmDeleteColumn = useConfirm()
+  const handleDeleteColumn = () => {
+    confirmDeleteColumn({
+      title: 'Delete Column? ',
+      description: 'This is will delete your Column and its cards! Are you sure?',
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel'
+    })
+      .then(() => {
+        deleteColumn(column._id)
+      })
+      .catch(() => {})
   }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -113,13 +129,22 @@ const Column: React.FC<Props> = ({ column, createCard }) => {
               anchorEl={anchorEl}
               open={open}
               onClose={handleCloseOption}
+              onClick={handleCloseOption}
               MenuListProps={{
                 'aria-labelledby': 'basic-column-dropdown'
               }}
             >
-              <MenuItem>
+              <MenuItem
+                sx={{
+                  '&:hover': {
+                    color: 'success.light',
+                    '& .add-card-icon': { color: 'success.light' }
+                  }
+                }}
+                onClick={() => setIsOpenCreateCardForm(prev => !prev)}
+              >
                 <ListItemIcon>
-                  <AddCardIcon fontSize="small" />
+                  <AddCardIcon fontSize="small" className="add-card-icon" />
                 </ListItemIcon>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
@@ -151,11 +176,19 @@ const Column: React.FC<Props> = ({ column, createCard }) => {
                 </Typography>
               </MenuItem>
               <Divider />
-              <MenuItem>
+              <MenuItem
+                onClick={handleDeleteColumn}
+                sx={{
+                  '&:hover': {
+                    color: 'warning.dark',
+                    '& .delete-icon': { color: 'warning.dark' }
+                  }
+                }}
+              >
                 <ListItemIcon>
-                  <DeleteIcon fontSize="small" />
+                  <DeleteIcon fontSize="small" className="delete-icon" />
                 </ListItemIcon>
-                <ListItemText>Removelete this column</ListItemText>
+                <ListItemText>Remove this column</ListItemText>
               </MenuItem>
               <MenuItem>
                 <ListItemIcon>
