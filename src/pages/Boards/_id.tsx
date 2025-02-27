@@ -9,10 +9,14 @@ import { fetchBoardDetailsAPI, selectActiveBoard, updateActiveBoard } from '~/re
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '~/redux/store'
 import { cloneDeep } from 'lodash'
+import { useParams } from 'react-router-dom'
+import CircularProgress from '@mui/material/CircularProgress'
+import Box from '@mui/material/Box'
 
 const Board: React.FC = () => {
   const dispatch: AppDispatch = useDispatch()
   const board = useSelector(selectActiveBoard)
+  const { boardId } = useParams()
 
   // Xử lý sau khi kéo thả column ở event DragEnd
   const handleMoveColums = (orderedColumns: ColumnType[]) => {
@@ -71,13 +75,26 @@ const Board: React.FC = () => {
   }
 
   useEffect(() => {
-    const boardId = '67b3f30391d98682ed4db77f' // Temporarily hardcoded
-    dispatch(fetchBoardDetailsAPI(boardId))
-  }, [dispatch])
+    if (boardId) {
+      dispatch(fetchBoardDetailsAPI(boardId))
+    }
+  }, [boardId, dispatch])
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <AppBar />
+      {!board && (
+        <Box
+          sx={{
+            height: theme => `calc(100vh - ${theme.trello.appBarHeight} - ${theme.trello.boardBarHeight})`,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <CircularProgress title="sadsadasd" />
+        </Box>
+      )}
       {board && <BoardBar board={board} />}
       {board && (
         <BoardContent
