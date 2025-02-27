@@ -8,15 +8,19 @@ import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortabl
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
+import { createColumnAPI } from '~/apis'
+import { generatePlaceholcerCard } from '~/utils/formatter'
+import { cloneDeep } from 'lodash'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectActiveBoard, updateActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 
 type Props = {
   columns: ColumnType[]
-  createColumn: (_title: string) => Promise<void>
-  createCard: (_columnId: string, _title: string) => Promise<void>
-  deleteColumn: (_columnId: string) => void
 }
 
-const ListColumns: React.FC<Props> = ({ columns, createColumn, createCard, deleteColumn }) => {
+const ListColumns: React.FC<Props> = ({ columns }) => {
+  const dispatch = useDispatch()
+  const board = useSelector(selectActiveBoard)
   const [isOpenCreateColumnForm, setIsOpenCreateColumnForm] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
@@ -25,9 +29,22 @@ const ListColumns: React.FC<Props> = ({ columns, createColumn, createCard, delet
       toast.error('Column title is required')
       return
     }
-    await createColumn(newColumnTitle)
-    setNewColumnTitle('')
-    setIsOpenCreateColumnForm(false)
+
+    if (board) {
+      const createdColumn: ColumnType = await createColumnAPI({ boardId: board._id, title: newColumnTitle })
+
+      // Thêm card rỗng để có thể kéo thả card vào column
+      createdColumn.cards = [generatePlaceholcerCard(createdColumn)]
+      createdColumn.cardOrderIds = [generatePlaceholcerCard(createdColumn)._id]
+
+      const newBoard = cloneDeep(board)
+      newBoard.columns.push(createdColumn)
+      newBoard.columnOrderIds.push(createdColumn._id)
+      dispatch(updateActiveBoard(newBoard))
+
+      setNewColumnTitle('')
+      setIsOpenCreateColumnForm(false)
+    }
   }
 
   return (
@@ -46,7 +63,7 @@ const ListColumns: React.FC<Props> = ({ columns, createColumn, createCard, delet
         }}
       >
         {columns.map(column => (
-          <Column key={column._id} column={column} createCard={createCard} deleteColumn={deleteColumn} />
+          <Column key={column._id} column={column} />
         ))}
 
         {!isOpenCreateColumnForm ? (
