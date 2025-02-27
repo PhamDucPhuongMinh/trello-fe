@@ -25,14 +25,18 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectActiveBoard, updateActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { createCardAPI, deleteColumnAPI } from '~/apis'
+import { cloneDeep } from 'lodash'
 
 type Props = {
   column: ColumnType
-  createCard: (_columnId: string, _title: string) => Promise<void>
-  deleteColumn: (_columnId: string) => void
 }
 
-const Column: React.FC<Props> = ({ column, createCard, deleteColumn }) => {
+const Column: React.FC<Props> = ({ column }) => {
+  const dispatch = useDispatch()
+  const board = useSelector(selectActiveBoard)
   const orderedCards = column.cards // Đã được sắp xếp theo CardOrderIds ở Board component (_id.tsx)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -53,7 +57,23 @@ const Column: React.FC<Props> = ({ column, createCard, deleteColumn }) => {
       })
       return
     }
-    await createCard(column._id, newCardTitle)
+
+    if (board) {
+      const createdCard = await createCardAPI({ boardId: board._id, columnId: column._id, title: newCardTitle })
+
+      const newBoard = cloneDeep(board)
+      const newColumn = newBoard.columns.find(c => c._id === column._id)
+      if (newColumn) {
+        if (newColumn.cards.length === 1 && newColumn.cards[0].FE_placeholder) {
+          newColumn.cards = []
+          newColumn.cardOrderIds = []
+        }
+        newColumn.cards.push(createdCard)
+        newColumn.cardOrderIds.push(createdCard._id)
+      }
+      dispatch(updateActiveBoard(newBoard))
+    }
+
     setNewCardTitle('')
     setIsOpenCreateCardForm(false)
   }
@@ -67,7 +87,13 @@ const Column: React.FC<Props> = ({ column, createCard, deleteColumn }) => {
       cancellationText: 'Cancel'
     })
       .then(() => {
-        deleteColumn(column._id)
+        if (board) {
+          const newBoard = cloneDeep(board)
+          newBoard.columns = newBoard.columns.filter(c => c._id !== column._id)
+          newBoard.columnOrderIds = newBoard.columnOrderIds.filter(id => id !== column._id)
+          dispatch(updateActiveBoard(newBoard))
+          deleteColumnAPI(column._id).then(res => toast.success(res?.deleteResult))
+        }
       })
       .catch(() => {})
   }

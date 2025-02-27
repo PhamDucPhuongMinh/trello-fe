@@ -2,10 +2,11 @@ import axios from 'axios'
 import { BoardType, ColumnType } from '~/types'
 import { API_ROOT } from '~/utils/contants'
 
-export const fetchBoardDetailsAPI = async (boardId: string) => {
-  const response = await axios.get(`${API_ROOT}/boards/${boardId}`)
-  return response.data
-}
+// Move API to Redux/ActiveBoard
+// export const fetchBoardDetailsAPI = async (boardId: string) => {
+//   const response = await axios.get(`${API_ROOT}/boards/${boardId}`)
+//   return response.data
+// }
 
 export const updateBoardDetailsAPI = async (boardId: string, newBoard: BoardType) => {
   const response = await axios.put(`${API_ROOT}/boards/${boardId}`, newBoard)
