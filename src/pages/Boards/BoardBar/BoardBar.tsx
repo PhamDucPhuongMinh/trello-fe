@@ -12,7 +12,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { BoardType } from '~/types'
-import { capitalizeFirstLetter } from '~/utils'
+import { capitalizeFirstLetter } from '~/utils/formatter'
 
 type Props = {
   board: BoardType
