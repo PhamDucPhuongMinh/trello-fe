@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify'
 import { BoardType, ColumnType } from '~/types'
 import axiosInstance from '~/utils/axiosInstance'
 import { API_ROOT } from '~/utils/contants'
@@ -41,5 +42,21 @@ export const moveCardToDifferentAPI = async (data: {
 
 export const createCardAPI = async (data: { title: string; boardId: string; columnId: string }) => {
   const response = await axiosInstance.post(`${API_ROOT}/cards`, data)
+  return response.data
+}
+
+export const registerUserAPI = async (data: { email: string; password: string }) => {
+  const response = await axiosInstance.post(`${API_ROOT}/users/register`, data)
+  toast.success('Register successfully! Please check your email to verify your account.', {
+    theme: 'colored'
+  })
+  return response.data
+}
+
+export const verifyUserAPI = async (data: { email: string; token: string }) => {
+  const response = await axiosInstance.put(`${API_ROOT}/users/verify`, data)
+  toast.success('Your account has been verified successfully!', {
+    theme: 'colored'
+  })
   return response.data
 }

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -19,6 +19,11 @@ import {
   PASSWORD_RULE_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import { loginUserAPI, selectCurrentUser } from '~/redux/currentUser/currentUserSlice'
+import { AppDispatch } from '~/redux/store'
+import { useEffect } from 'react'
 
 type LoginFormType = {
   email: string
@@ -26,6 +31,11 @@ type LoginFormType = {
 }
 
 function LoginForm() {
+  const dispatch = useDispatch<AppDispatch>()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const user = useSelector(selectCurrentUser)
+  const { verifiedEmail, registeredEmail } = Object.fromEntries([...searchParams])
   const {
     register,
     handleSubmit,
@@ -33,8 +43,16 @@ function LoginForm() {
   } = useForm<LoginFormType>()
 
   const submitLogIn = (data: LoginFormType) => {
-    console.log(data)
+    toast.promise(dispatch(loginUserAPI(data)), {
+      pending: 'Logging in...'
+    })
   }
+
+  useEffect(() => {
+    if (user) {
+      navigate('/')
+    }
+  }, [navigate, user])
 
   return (
     <form onSubmit={handleSubmit(submitLogIn)}>
@@ -63,7 +81,7 @@ function LoginForm() {
               color: theme => theme.palette.grey[500]
             }}
           >
-            Author: TrungQuanDev
+            Login
           </Box>
           <Box
             sx={{
@@ -74,23 +92,27 @@ function LoginForm() {
               padding: '0 1em'
             }}
           >
-            <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-              Your email&nbsp;
-              <Typography variant="body1" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
-                trungquandev@gmail.com
-              </Typography>
-              &nbsp;has been verified.
-              <br />
-              Now you can login to enjoy our services! Have a good day!
-            </Alert>
-            <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-              An email has been sent to&nbsp;
-              <Typography variant="body1" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
-                trungquandev@gmail.com
-              </Typography>
-              <br />
-              Please check and verify your account before logging in!
-            </Alert>
+            {verifiedEmail && (
+              <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
+                Your email&nbsp;
+                <Typography variant="body1" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
+                  {verifiedEmail}
+                </Typography>
+                &nbsp;has been verified.
+                <br />
+                Now you can login to enjoy our services! Have a good day!
+              </Alert>
+            )}
+            {registeredEmail && (
+              <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
+                An email has been sent to&nbsp;
+                <Typography variant="body1" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
+                  {registeredEmail}
+                </Typography>
+                <br />
+                Please check and verify your account before logging in!
+              </Alert>
+            )}
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>
@@ -119,7 +141,7 @@ function LoginForm() {
                 type="password"
                 variant="outlined"
                 error={!!errors.password}
-                {...register('email', {
+                {...register('password', {
                   required: FIELD_REQUIRED_MESSAGE,
                   pattern: {
                     value: PASSWORD_RULE,

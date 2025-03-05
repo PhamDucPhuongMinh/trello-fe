@@ -10,11 +10,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '~/redux/store'
 import { cloneDeep } from 'lodash'
 import { useParams } from 'react-router-dom'
-import CircularProgress from '@mui/material/CircularProgress'
-import Box from '@mui/material/Box'
+import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 
 const Board: React.FC = () => {
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const board = useSelector(selectActiveBoard)
   const { boardId } = useParams()
 
@@ -80,30 +79,20 @@ const Board: React.FC = () => {
     }
   }, [boardId, dispatch])
 
+  if (!board) {
+    return <PageLoadingSpinner caption="Loading board..." />
+  }
+
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <AppBar />
-      {!board && (
-        <Box
-          sx={{
-            height: theme => `calc(100vh - ${theme.trello.appBarHeight} - ${theme.trello.boardBarHeight})`,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <CircularProgress title="sadsadasd" />
-        </Box>
-      )}
-      {board && <BoardBar board={board} />}
-      {board && (
-        <BoardContent
-          board={board}
-          moveColums={handleMoveColums}
-          moveCardInTheSameColumn={handleMoveCardInTheSameColumn}
-          moveCardToDifferentColumn={handleMoveCardToDifferentColumn}
-        />
-      )}
+      <BoardBar board={board} />
+      <BoardContent
+        board={board}
+        moveColums={handleMoveColums}
+        moveCardInTheSameColumn={handleMoveCardInTheSameColumn}
+        moveCardToDifferentColumn={handleMoveCardToDifferentColumn}
+      />
     </Container>
   )
 }
