@@ -60,3 +60,8 @@ export const verifyUserAPI = async (data: { email: string; token: string }) => {
   })
   return response.data
 }
+
+export const refreshTokenAPI = async () => {
+  const response = await axiosInstance.get<{ accessToken: string }>(`${API_ROOT}/users/refresh-token`)
+  return response.data
+}

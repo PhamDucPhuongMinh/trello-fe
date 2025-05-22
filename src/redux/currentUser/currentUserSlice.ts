@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { toast } from 'react-toastify'
 import { UserType } from '~/types'
 import axiosInstance from '~/utils/axiosInstance'
 import { API_ROOT } from '~/utils/contants'
@@ -20,6 +21,14 @@ export const loginUserAPI = createAsyncThunk(
   }
 )
 
+export const logoutUserAPI = createAsyncThunk('users/logoutUserAPI', async (showSuccessMessage: boolean = true) => {
+  const response = await axiosInstance.delete(`${API_ROOT}/users/logout`)
+  if (showSuccessMessage) {
+    toast.success('Logout successfully!')
+  }
+  return response.data
+})
+
 export const currentUserSlice = createSlice({
   name: 'currentUser',
   initialState,
@@ -27,6 +36,9 @@ export const currentUserSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(loginUserAPI.fulfilled, (state, action: PayloadAction<UserType>) => {
       state.currentUser = action.payload
+    })
+    builder.addCase(logoutUserAPI.fulfilled, state => {
+      state.currentUser = null
     })
   }
 })

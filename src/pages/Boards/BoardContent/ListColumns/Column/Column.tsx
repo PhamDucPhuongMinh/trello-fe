@@ -79,23 +79,20 @@ const Column: React.FC<Props> = ({ column }) => {
   }
 
   const confirmDeleteColumn = useConfirm()
-  const handleDeleteColumn = () => {
-    confirmDeleteColumn({
+  const handleDeleteColumn = async () => {
+    const { confirmed } = await confirmDeleteColumn({
       title: 'Delete Column? ',
       description: 'This is will delete your Column and its cards! Are you sure?',
       confirmationText: 'Confirm',
       cancellationText: 'Cancel'
     })
-      .then(() => {
-        if (board) {
-          const newBoard = cloneDeep(board)
-          newBoard.columns = newBoard.columns.filter(c => c._id !== column._id)
-          newBoard.columnOrderIds = newBoard.columnOrderIds.filter(id => id !== column._id)
-          dispatch(updateActiveBoard(newBoard))
-          deleteColumnAPI(column._id).then(res => toast.success(res?.deleteResult))
-        }
-      })
-      .catch(() => {})
+    if (confirmed && board) {
+      const newBoard = cloneDeep(board)
+      newBoard.columns = newBoard.columns.filter(c => c._id !== column._id)
+      newBoard.columnOrderIds = newBoard.columnOrderIds.filter(id => id !== column._id)
+      dispatch(updateActiveBoard(newBoard))
+      deleteColumnAPI(column._id).then(res => toast.success(res?.deleteResult))
+    }
   }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({

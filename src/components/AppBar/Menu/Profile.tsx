@@ -10,8 +10,14 @@ import Settings from '@mui/icons-material/Settings'
 import Logout from '@mui/icons-material/Logout'
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
+import { useDispatch, useSelector } from 'react-redux'
+import { logoutUserAPI, selectCurrentUser } from '~/redux/currentUser/currentUserSlice'
+import { useConfirm } from 'material-ui-confirm'
+import { AppDispatch } from '~/redux/store'
 
 const Profile: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  const currentUser = useSelector(selectCurrentUser)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -20,6 +26,19 @@ const Profile: React.FC = () => {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  const confirmLogout = useConfirm()
+  const handleLogout = async () => {
+    const { confirmed } = await confirmLogout({
+      title: 'Are you sure you want to logout?',
+      confirmationText: 'Logout',
+      cancellationText: 'Cancel'
+    })
+    if (confirmed) {
+      dispatch(logoutUserAPI(true))
+    }
+  }
+
   return (
     <Box>
       <Tooltip title="Account settings">
@@ -31,11 +50,7 @@ const Profile: React.FC = () => {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
         >
-          <Avatar
-            sx={{ width: 32, height: 32 }}
-            alt="avatar"
-            src="https://cdn.flowerstore.vn/wp-content/uploads/2024/08/avatar-doremon-ngau-1.jpg"
-          />
+          <Avatar sx={{ width: 32, height: 32 }} alt="avatar" src={currentUser?.avatar || ''} />
         </IconButton>
       </Tooltip>
       <Menu
@@ -75,11 +90,8 @@ const Profile: React.FC = () => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem>
-          <Avatar sx={{ width: 28, height: 28, mr: 2 }} /> Profile
-        </MenuItem>
-        <MenuItem>
-          <Avatar sx={{ width: 28, height: 28, mr: 2 }} /> My account
+        <MenuItem sx={{ '&:hover': { color: 'success.light' } }}>
+          <Avatar sx={{ width: 28, height: 28, mr: 2 }} src={currentUser?.avatar || ''} /> Profile
         </MenuItem>
         <Divider />
         <MenuItem>
@@ -94,9 +106,19 @@ const Profile: React.FC = () => {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          sx={{
+            '&:hover': {
+              color: 'warning.dark',
+              '& .logout-icon': {
+                color: 'warning.dark'
+              }
+            }
+          }}
+          onClick={handleLogout}
+        >
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout className="logout-icon" fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>

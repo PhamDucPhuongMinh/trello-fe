@@ -10,8 +10,11 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store.ts'
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
+import { injectAxiosDispatchReduxStore } from './utils/axiosInstance.ts'
 
 const persistor = persistStore(store)
+
+injectAxiosDispatchReduxStore(store.dispatch)
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter basename="/">
